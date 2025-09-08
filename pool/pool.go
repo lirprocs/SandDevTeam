@@ -26,6 +26,12 @@ type workerPool struct {
 }
 
 func NewWorkerPool(queueSize, numberOfWorkers int, hook func()) Pool {
+	if numberOfWorkers <= 0 {
+		panic("numberOfWorkers must be > 0")
+	}
+	if queueSize <= 0 {
+		panic("queueSize must be > 0")
+	}
 	wp := &workerPool{
 		tasks:  make(chan func(), queueSize),
 		stopCh: make(chan struct{}),

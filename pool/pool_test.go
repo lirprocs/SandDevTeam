@@ -11,6 +11,100 @@ const size = 1024
 
 var hook = func() {}
 
+func TestNewWorkerPoolValidation(t *testing.T) {
+	tests := []struct {
+		name            string
+		queueSize       int
+		numberOfWorkers int
+		shouldPanic     bool
+		panicMessage    string
+	}{
+		{
+			name:            "Valid parameters - normal case",
+			queueSize:       10,
+			numberOfWorkers: 5,
+			shouldPanic:     false,
+		},
+		{
+			name:            "Invalid - zero workers",
+			queueSize:       10,
+			numberOfWorkers: 0,
+			shouldPanic:     true,
+			panicMessage:    "numberOfWorkers must be > 0",
+		},
+		{
+			name:            "Invalid - zero queue size",
+			queueSize:       0,
+			numberOfWorkers: 3,
+			shouldPanic:     true,
+		},
+		{
+			name:            "Invalid - negative workers large",
+			queueSize:       10,
+			numberOfWorkers: -1,
+			shouldPanic:     true,
+			panicMessage:    "numberOfWorkers must be > 0",
+		},
+		{
+			name:            "Invalid - negative queue size large",
+			queueSize:       -1,
+			numberOfWorkers: 5,
+			shouldPanic:     true,
+			panicMessage:    "queueSize must be > 0",
+		},
+		{
+			name:            "Invalid - both parameters negative",
+			queueSize:       -5,
+			numberOfWorkers: -3,
+			shouldPanic:     true,
+			panicMessage:    "numberOfWorkers must be > 0",
+		},
+		{
+			name:            "Valid - large parameters",
+			queueSize:       1000,
+			numberOfWorkers: 100,
+			shouldPanic:     false,
+		},
+		{
+			name:            "Valid - minimal valid parameters",
+			queueSize:       1,
+			numberOfWorkers: 1,
+			shouldPanic:     false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				r := recover()
+				if tt.shouldPanic {
+					if r == nil {
+						t.Errorf("Expected panic, but got none")
+						return
+					}
+					if tt.panicMessage != "" && r != tt.panicMessage {
+						t.Errorf("Expected panic message %q, got %q", tt.panicMessage, r)
+					}
+				} else {
+					if r != nil {
+						t.Errorf("Unexpected panic: %v", r)
+					}
+				}
+			}()
+
+			pool := NewWorkerPool(tt.queueSize, tt.numberOfWorkers, hook)
+
+			if !tt.shouldPanic {
+				if pool == nil {
+					t.Error("Expected pool to be created, got nil")
+				}
+
+				pool.Stop()
+			}
+		})
+	}
+}
+
 func TestSubmit(t *testing.T) {
 	var counter int32
 	numTask := 10
