@@ -1,4 +1,4 @@
-# Реализован интерфейс Pool, покрыт тестами[![Test](https://github.com/lirprocs/SandDevTeam/actions/workflows/test.yaml/badge.svg)](https://github.com/lirprocs/SandDevTeam/actions/workflows/test.yaml)
+# Реализован интерфейс Pool, покрыт тестами. [![Test](https://github.com/lirprocs/SandDevTeam/actions/workflows/test.yaml/badge.svg)](https://github.com/lirprocs/SandDevTeam/actions/workflows/test.yaml)
 ```go
 type Pool interface { 
 // Submit - добавить задачу в пул. 
