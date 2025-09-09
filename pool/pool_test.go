@@ -266,10 +266,10 @@ func TestQueueOverflow(t *testing.T) {
 	defer wp.Stop()
 
 	if err := wp.Submit(func() { time.Sleep(50 * time.Millisecond) }); err != nil {
-		t.Fatalf("unexpected error: %v", err)
+		t.Fatalf("TestQueueOverflow: unexpected error: %v", err)
 	}
 
 	if err := wp.Submit(func() {}); err != ErrQueueOverflow {
-		t.Errorf("expected ErrQueueOverflow, got %v", err)
+		t.Errorf("TestQueueOverflow: expected ErrQueueOverflow, got %v", err)
 	}
 }
