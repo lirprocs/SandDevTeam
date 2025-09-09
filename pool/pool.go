@@ -71,13 +71,15 @@ func (wp *workerPool) Submit(task func()) error {
 	}
 	wp.mu.Unlock()
 
+	wp.wg.Add(1)
 	select {
 	case wp.tasks <- task:
-		wp.wg.Add(1)
 		return nil
 	case <-wp.stopCh:
+		wp.wg.Done()
 		return ErrPoolStopped
 	default:
+		wp.wg.Done()
 		return ErrQueueOverflow
 	}
 }
