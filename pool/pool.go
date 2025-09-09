@@ -48,8 +48,6 @@ func NewWorkerPool(queueSize, numberOfWorkers int, hook func()) Pool {
 func (wp *workerPool) worker() {
 	for {
 		select {
-		case <-wp.stopCh:
-			return
 		case task, ok := <-wp.tasks:
 			if !ok {
 				return
@@ -90,9 +88,9 @@ func (wp *workerPool) Stop() error {
 		wp.stopped = true
 		wp.mu.Unlock()
 
+		close(wp.stopCh)
 		close(wp.tasks)
 		wp.wg.Wait()
-		close(wp.stopCh)
 	})
 	return nil
 }
